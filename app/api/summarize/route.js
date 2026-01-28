@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
 import pdf from "pdf-parse";
-import OpenAI from "openai";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export async function POST(req) {
   try {
@@ -22,7 +20,7 @@ export async function POST(req) {
     const prompt = `
 You are an Indian equity research analyst.
 Simplify this earnings concall for a retail investor.
-Avoid jargon. Be neutral and honest.
+Avoid jargon. Be neutral and factual.
 
 Return ONLY in this format:
 
@@ -51,19 +49,15 @@ CONCALL TEXT:
 ${text}
 `;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [{ role: "user", content: prompt }],
-      temperature: 0.3,
-    });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const result = await model.generateContent(prompt);
+    const response = result.response.text();
 
-    return NextResponse.json({
-      summary: response.choices[0].message.content,
-    });
-  } catch (err) {
-    console.error(err);
+    return NextResponse.json({ summary: response });
+  } catch (error) {
+    console.error(error);
     return NextResponse.json(
-      { error: "Failed to summarize" },
+      { error: "Failed to generate summary" },
       { status: 500 }
     );
   }
