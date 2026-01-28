@@ -18,7 +18,7 @@ export async function POST(req) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const pdfData = await pdf(buffer);
-    const text = pdfData.text.slice(0, 12000);
+    const text = pdfData.text.slice(0, 6000);
 
     const prompt = `
 You are an Indian equity research analyst.
