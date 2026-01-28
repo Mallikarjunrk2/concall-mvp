@@ -21,9 +21,16 @@ export default function Home() {
       body: formData,
     });
 
-    const data = await res.json();
-    setSummary(data.summary || "Error generating summary");
-    setLoading(false);
+  const data = await res.json();
+
+if (!res.ok || !data.summary) {
+  setSummary("❌ Failed to generate summary. Try a smaller PDF.");
+} else {
+  setSummary(data.summary);
+}
+
+setLoading(false);
+
   }
 
   return (
