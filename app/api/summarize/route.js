@@ -1,3 +1,6 @@
+export const runtime = "nodejs";
+export const maxDuration = 60;
+
 import { NextResponse } from "next/server";
 import pdf from "pdf-parse";
 import { GoogleGenerativeAI } from "@google/generative-ai";
