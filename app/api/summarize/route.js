@@ -53,8 +53,15 @@ ${text}
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const result = await model.generateContent(prompt);
-    const response = result.response.text();
+    const result = await Promise.race([
+  model.generateContent(prompt),
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Gemini timeout")), 25000)
+  )
+]);
+
+const response = result.response.text();
+
 
     return NextResponse.json({ summary: response });
   } catch (error) {
